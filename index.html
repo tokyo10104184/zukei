@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometric Shape Drawer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>図形描画アプリ</h1>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="shapeType">図形の種類:</label>
+                <select id="shapeType">
+                    <option value="">選択してください</option>
+                    <option value="triangle">三角形</option>
+                    <option value="quadrilateral">四角形</option>
+                    <option value="polygon">正多角形</option>
+                    <option value="circle">円・楕円</option>
+                </select>
+            </div>
+
+            <div class="control-group" id="methodGroup" style="display: none;">
+                <label for="constructionMethod">入力タイプ:</label>
+                <select id="constructionMethod">
+                    <!-- Options will be populated dynamically -->
+                </select>
+            </div>
+
+            <div id="inputsContainer">
+                <!-- Inputs will be populated dynamically -->
+            </div>
+
+            <button id="drawBtn" disabled>描画</button>
+            <div id="errorMessage" class="error"></div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="geometryCanvas" width="600" height="600"></canvas>
+        </div>
+    </div>
+    <script src="geometry.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
