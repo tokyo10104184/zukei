@@ -146,6 +146,24 @@
                 p2 = { x: side + dx, y: dy };
                 p3 = { x: side, y: 0 };
                 p4 = { x: 0, y: 0 };
+
+            } else if (method === 'trapezoid') {
+                const { topBase, bottomBase, height, angle } = inputs;
+                if (angle <= 0 || angle >= 180) throw new Error("角度は0〜180度の間である必要があります");
+                // P4 (bottom-left) at (0,0) ? No, usually we want standard orientation.
+                // Let's put P4 at (0,0). P3 at (bottomBase, 0).
+                // P1 (top-left) depends on angle.
+                // dx = height / tan(angle)
+                // P1 = (dx, height).
+                // P2 = (dx + topBase, height).
+
+                const rad = Geometry.toRadians(angle);
+                const dx = height / Math.tan(rad);
+
+                p1 = { x: dx, y: height };
+                p2 = { x: dx + topBase, y: height };
+                p3 = { x: bottomBase, y: 0 };
+                p4 = { x: 0, y: 0 };
             }
 
             return [p1, p2, p3, p4];
@@ -183,6 +201,53 @@
                  return { type: 'ellipse', rx: majorAxis, ry: minorAxis, x: 0, y: 0 };
              }
              return null;
+         },
+
+         calculateFreePolygon: function(steps) {
+             // steps: Array of { length, angle }
+             // angle: interior angle relative to previous line segment?
+             // Or relative change in direction?
+             // Let's assume input is "Interior Angle" because user said "Angle A = 60".
+             // Start at (0,0). Direction 0 (East).
+             // First Line: Draw Length. End Point (L, 0).
+             // At End Point, turn. If Interior Angle is A, turn direction is (180 - A) (Left turn) or -(180-A) (Right turn)?
+             // Usually polygons are drawn counter-clockwise (CCW).
+             // Interior angle A means we turn left by (180 - A).
+
+             const points = [{ x: 0, y: 0 }];
+             let currentX = 0;
+             let currentY = 0;
+             let currentDir = 0; // Radians. 0 is East.
+
+             for (let i = 0; i < steps.length; i++) {
+                 const step = steps[i];
+                 const len = step.length;
+                 const angleDeg = step.angle; // Interior angle
+
+                 // For the first line, we just move "Length" in current direction (0).
+                 // For subsequent lines, we first turn, then move.
+                 // BUT: The "Angle" usually belongs to the vertex we just arrived at.
+                 // So:
+                 // Step 1: Length L1. (Angle is ignored or is the starting angle? Let's say Angle is for the *next* turn, or we group Length+Angle).
+                 // Let's group: Move Length, then Turn Angle (prepare for next).
+                 // NO, "Angle A" is usually between Side 1 and Side 2.
+                 // So Input: L1, Angle1 (between L1 and L2), L2, Angle2, ...
+
+                 // Implementation:
+                 // Move L.
+                 // Turn (180 - Angle).
+
+                 currentX += len * Math.cos(currentDir);
+                 currentY += len * Math.sin(currentDir);
+                 points.push({ x: currentX, y: currentY });
+
+                 if (typeof angleDeg === 'number') {
+                     const turnAngle = 180 - angleDeg;
+                     currentDir += Geometry.toRadians(turnAngle);
+                 }
+             }
+
+             return points;
         }
     };
 

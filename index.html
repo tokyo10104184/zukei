@@ -33,6 +33,22 @@
                 <!-- Inputs will be populated dynamically -->
             </div>
 
+            <details id="advancedFeatures" style="margin-bottom: 20px; width: 100%;">
+                <summary>高度な機能</summary>
+                <div class="advanced-controls" style="padding: 10px; background: #eee; margin-top: 10px; border-radius: 4px;">
+                    <label>
+                        <input type="checkbox" id="freeDrawMode"> 自由描画モード (辺と角を順に追加)
+                    </label>
+                    <div id="freeDrawControls" style="display: none; margin-top: 10px;">
+                        <div id="stepsContainer"></div>
+                        <div style="margin-top: 10px; display: flex; gap: 10px;">
+                            <button id="addStepBtn" style="width: auto; background-color: #28a745;">+ ステップ追加</button>
+                            <button id="removeStepBtn" style="width: auto; background-color: #dc3545;">- 削除</button>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
             <button id="drawBtn" disabled>描画</button>
             <div id="errorMessage" class="error"></div>
         </div>

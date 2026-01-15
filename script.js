@@ -24,8 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 rectangle: { name: '長方形 (幅, 高さ)', inputs: ['width', 'height'] },
                 square: { name: '正方形 (一辺)', inputs: ['side'] },
                 parallelogram: { name: '平行四辺形 (底辺, 斜辺, 角度)', inputs: ['base', 'side', 'angle'] },
-                rhombus: { name: 'ひし形 (一辺, 角度)', inputs: ['side', 'angle'] }
-                // Trapezoild requires more complex inputs, skipping for simplicity unless requested
+                rhombus: { name: 'ひし形 (一辺, 角度)', inputs: ['side', 'angle'] },
+                trapezoid: { name: '台形 (上底, 下底, 高さ, 左下角)', inputs: ['topBase', 'bottomBase', 'height', 'angle'] }
             }
         },
         polygon: {
@@ -49,13 +49,75 @@ document.addEventListener('DOMContentLoaded', () => {
         width: '幅', height: '高さ', side: '一辺',
         base: '底辺', angle: '角度 (°)',
         sides: '辺の数 (N)', radius: '半径',
-        majorAxis: '長径 (A)', minorAxis: '短径 (B)'
+        majorAxis: '長径 (A)', minorAxis: '短径 (B)',
+        topBase: '上底', bottomBase: '下底'
     };
+
+    // Advanced Mode Elements
+    const freeDrawCheckbox = document.getElementById('freeDrawMode');
+    const freeDrawControls = document.getElementById('freeDrawControls');
+    const stepsContainer = document.getElementById('stepsContainer');
+    const addStepBtn = document.getElementById('addStepBtn');
+    const removeStepBtn = document.getElementById('removeStepBtn');
 
     // Event Listeners
     shapeTypeSelect.addEventListener('change', updateMethods);
     constructionMethodSelect.addEventListener('change', updateInputs);
     drawBtn.addEventListener('click', handleDraw);
+
+    // Advanced Mode Listeners
+    freeDrawCheckbox.addEventListener('change', toggleFreeDrawMode);
+    addStepBtn.addEventListener('click', addFreeDrawStep);
+    removeStepBtn.addEventListener('click', removeFreeDrawStep);
+
+    function toggleFreeDrawMode() {
+        const isFree = freeDrawCheckbox.checked;
+
+        if (isFree) {
+            // Disable standard controls
+            shapeTypeSelect.disabled = true;
+            constructionMethodSelect.disabled = true;
+            inputsContainer.style.opacity = '0.5';
+            inputsContainer.style.pointerEvents = 'none';
+            freeDrawControls.style.display = 'block';
+            drawBtn.disabled = false; // Will validate in handleDraw or real-time?
+            if (stepsContainer.children.length === 0) {
+                // Add initial steps
+                addFreeDrawStep();
+                addFreeDrawStep();
+                addFreeDrawStep();
+            }
+        } else {
+            // Enable standard controls
+            shapeTypeSelect.disabled = false;
+            constructionMethodSelect.disabled = false;
+            inputsContainer.style.opacity = '1';
+            inputsContainer.style.pointerEvents = 'auto';
+            freeDrawControls.style.display = 'none';
+            updateInputs(); // Re-validate
+        }
+    }
+
+    function addFreeDrawStep() {
+        const index = stepsContainer.children.length + 1;
+        const row = document.createElement('div');
+        row.className = 'step-row';
+
+        row.innerHTML = `
+            <span>#${index}</span>
+            <label>長さ:</label>
+            <input type="number" class="step-len" min="0" value="10">
+            <label>次の角度(°):</label>
+            <input type="number" class="step-ang" value="60">
+        `;
+        stepsContainer.appendChild(row);
+    }
+
+    function removeFreeDrawStep() {
+        if (stepsContainer.lastElementChild) {
+            stepsContainer.removeChild(stepsContainer.lastElementChild);
+        }
+    }
 
     function updateMethods() {
         const shape = shapeTypeSelect.value;
@@ -127,6 +189,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleDraw() {
+        if (freeDrawCheckbox.checked) {
+            // Handle Free Draw
+            const rows = stepsContainer.querySelectorAll('.step-row');
+            const steps = [];
+            rows.forEach(row => {
+                const lenInput = row.querySelector('.step-len');
+                const angInput = row.querySelector('.step-ang');
+                steps.push({
+                    length: parseFloat(lenInput.value) || 0,
+                    angle: parseFloat(angInput.value) || 0
+                });
+            });
+
+            try {
+                const coordinates = Geometry.calculateFreePolygon(steps);
+                drawShape(coordinates, 'polygon'); // Treat as generic polygon
+                errorMessage.textContent = '';
+            } catch (e) {
+                errorMessage.textContent = e.message;
+            }
+            return;
+        }
+
         const shape = shapeTypeSelect.value;
         const method = constructionMethodSelect.value;
         const inputs = {};

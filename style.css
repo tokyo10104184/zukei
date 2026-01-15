@@ -61,6 +61,24 @@ select, input {
     min-width: 80px;
 }
 
+/* Step row for free drawing */
+.step-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+    align-items: center;
+    background: white;
+    padding: 8px;
+    border-radius: 4px;
+}
+.step-row label {
+    min-width: auto;
+    font-size: 14px;
+}
+.step-row input {
+    width: 80px;
+}
+
 button {
     background-color: #007bff;
     color: white;
@@ -98,4 +116,12 @@ canvas {
     margin-top: 10px;
     font-size: 14px;
     min-height: 20px;
+}
+
+details {
+    cursor: pointer;
+}
+summary {
+    font-weight: bold;
+    outline: none;
 }
