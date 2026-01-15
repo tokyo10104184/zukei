@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometric Shape Drawer 3D</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .nav-header {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .nav-btn {
+            background-color: #6c757d;
+            width: auto;
+            padding: 8px 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-header">
+        <a href="index.html"><button class="nav-btn">← 2D版に戻る</button></a>
+    </div>
+    <div class="container">
+        <h1>立体図形描画アプリ (3D)</h1>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="shapeType">立体の種類:</label>
+                <select id="shapeType">
+                    <option value="">選択してください</option>
+                    <option value="cube">立方体</option>
+                    <option value="cuboid">直方体</option>
+                    <option value="prism_tri">三角柱</option>
+                    <option value="tetrahedron">正四面体</option>
+                    <option value="pyramid_sq">四角錐</option>
+                    <option value="octahedron">正八面体</option>
+                    <option value="dodecahedron">正十二面体</option>
+                    <option value="icosahedron">正二十面体</option>
+                    <option value="cylinder">円柱</option>
+                    <option value="cone">円錐</option>
+                    <option value="sphere">球</option>
+                </select>
+            </div>
+
+            <div id="inputsContainer">
+                <!-- Inputs will be populated dynamically -->
+            </div>
+
+            <button id="drawBtn" disabled>描画</button>
+            <div id="errorMessage" class="error"></div>
+            <p style="font-size: 0.9em; color: #666; margin-top: 10px; text-align: center;">
+                ※ 描画された図形をドラッグして回転できます
+            </p>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="geometryCanvas3D" width="600" height="600"></canvas>
+        </div>
+    </div>
+    <script src="geometry3d.js"></script>
+    <script src="script3d.js"></script>
+</body>
+</html>
